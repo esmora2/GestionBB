@@ -1,0 +1,118 @@
+version: '3.8'
+
+services:
+  db-usuarios:
+    image: postgres:15
+    container_name: db-usuarios
+    restart: always
+    environment:
+      POSTGRES_DB: usuariosOA
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5432:5432"
+    networks:
+      - microservices-net
+
+  db-biblioteca:
+    image: postgres:15
+    container_name: db-biblioteca
+    restart: always
+    environment:
+      POSTGRES_DB: db_biblioteca
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5433:5432"
+    networks:
+      - microservices-net
+
+  db-prestamos:
+    image: postgres:15
+    container_name: db-prestamos
+    restart: always
+    environment:
+      POSTGRES_DB: db_prestamos
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5434:5432"
+    networks:
+      - microservices-net
+
+  auth-server:
+    build: ./AuthServer
+    container_name: auth-server
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db-usuarios
+    networks:
+      - microservices-net
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db-usuarios:5432/usuariosOA
+      SPRING_MAIL_USERNAME: "alejopilataxi2508@gmail.com"
+      SPRING_MAIL_PASSWORD: "faobntrweopjjrhs"
+
+  user-service:
+    build: ./User
+    container_name: user-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      - db-usuarios
+      - auth-server
+    networks:
+      - microservices-net
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db-usuarios:5432/usuariosOA
+
+  biblioteca-service:
+    build: ./Biblioteca
+    container_name: biblioteca-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      - db-biblioteca
+      - auth-server
+    networks:
+      - microservices-net
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db-biblioteca:5432/db_biblioteca
+
+  prestamo-service:
+    build: ./Prestamo
+    container_name: prestamo-service
+    ports:
+      - "8083:8083"
+    depends_on:
+      - db-prestamos
+      - biblioteca-service
+      - auth-server
+    networks:
+      - microservices-net
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db-prestamos:5432/db_prestamos
+
+  frontend:
+    build: ./biblioteca-online
+    container_name: frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./biblioteca-online:/app
+      - /app/node_modules
+    command: ["npm", "run", "dev"]
+    depends_on:
+      - auth-server
+      - user-service
+      - biblioteca-service
+      - prestamo-service
+    networks:
+      - microservices-net
+    environment:
+      - NODE_ENV=development
+
+networks:
+  microservices-net:
+    driver: bridge

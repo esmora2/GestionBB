@@ -35,6 +35,7 @@ public class RecursoService {
         recurso.setTipo(dto.getTipo());
         recurso.setCategoria(categoria);
         recurso.setDisponible(dto.getDisponible());
+        recurso.setImagenUrl(dto.getImagenUrl()); // Guardar la URL de la imagen
 
         return recursoRepository.save(recurso);
     }
@@ -54,6 +55,7 @@ public class RecursoService {
         recurso.setTipo(dto.getTipo());
         recurso.setCategoria(categoria);
         recurso.setDisponible(dto.getDisponible());
+        recurso.setImagenUrl(dto.getImagenUrl()); // Actualizar la imagen
 
         return recursoRepository.save(recurso);
     }

@@ -31,6 +31,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/recursos").permitAll()
                         .requestMatchers("/copias/{codigo}/disponible").hasAnyRole("ADMINISTRADOR", "CLIENTE") // ✅ Admin y Cliente pueden acceder
                         .anyRequest().authenticated()
                 )

@@ -3,8 +3,6 @@ package com.espe.edu.Biblioteca.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.util.UUID;
-
 @Entity
 @Table(name = "recursos")
 @Data
@@ -29,4 +27,7 @@ public class Recurso {
     private Categoria categoria;
 
     private boolean disponible = true;
+
+    // Nuevo campo para la imagen
+    private String imagenUrl;
 }

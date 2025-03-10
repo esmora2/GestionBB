@@ -12,4 +12,5 @@ public class RecursoDTO {
     private String tipo;
     private String categoriaNombre; // 🔥 Ahora usamos el nombre en vez de categoriaId
     private Boolean disponible;
+    private String imagenUrl; // Nuevo campo para la imagen
 }
